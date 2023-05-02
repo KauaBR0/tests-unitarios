@@ -1,6 +1,5 @@
 const request = require('supertest')
 const jwt = require('jwt-simple')
-
 const app = require('../../src/app')
 
 const MAIN_ROUTE = '/v1/accounts';
@@ -12,10 +11,17 @@ beforeEach(async () => {
     user = { ...res[0] };
     user.token = jwt.encode(user, 'Segredo!')
     const res2 = await app.services.user.save({ name: 'User Account #2', mail: `${Date.now()}@mail.com`, passwd: '123456' })
-    user = { ...res2[0] };
+    user2 = { ...res2[0] };
 })
 
-test('Deve listar apenas as contas do usuario', () => {
+// beforeEach(async () => {
+//     await app.db('transactions').del()
+//     await app.db('accounts').del()
+// })
+
+test('Deve listar apenas as contas do usuario', async () => {
+    await app.db('transactions').del()
+    await app.db('accounts').del()
     return app.db('accounts')
         .insert([
             { name: 'Acc User #1', user_id: user.id },
@@ -121,7 +127,7 @@ test('Deve remover uma conta', () => {
 
 test('Não deve remover uma conta de outro usuario', () => {
     return app.db('accounts')
-        .insert({ name: 'Acc To Remove', user_id: user2.id }, ['id'])
+        .insert({ name: 'Acc To Remove', user_id: user2_id }, ['id'])
         .then(acc => request(app).delete(`${MAIN_ROUTE}/${acc[0].id}`)
             .set('authorization', `bearer ${user.token}`))
         .then((res) => {
