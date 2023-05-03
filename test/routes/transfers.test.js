@@ -1,7 +1,6 @@
 const request = require('supertest')
 const app = require('../../src/app')
-const { test } = require('../../knexfile')
-
+ 
 const MAIN_ROUTE = '/v1/transactions'
 const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAwMDAsIm5hbWUiOiJVc2VyICMxIiwibWFpbCI6InVzZXIxQG1haWwuY29tIn0.QMgvo_lPe0Rdxpx7cay_hIkDAbjCK_--VD2fP0NTTqk'
 
@@ -90,6 +89,12 @@ describe('Ao salvar uma transferência válida...', () => {
     test('Ambas devem referenciar a transferência que as originou', async () => {
         expect(income.transfer_id).toBe(transferId)
         expect(outcome.transfer_id).toBe(transferId)
+    })
+    
+    
+    test('Ambas devem estar com status de realizadas', async () => {
+        expect(income.status).toBe(true)
+        expect(outcome.status).toBe(true)
     })
 })
 
@@ -235,5 +240,37 @@ describe('Ao tentar Alterar uma transferência inválida...', () => {
         return template({transfer_id: 10002}, 'Conta #10002 não pertence ao usuário')
     })
 
+    describe('Ao remover uma transferência...', () => {
+        test('Deve retornar o status 204', () => {
+            return request(app).delete(`${MAIN_ROUTE}/10000`)
+            .set('authorization', `bearer ${TOKEN}`)
+            .then((res) => {
+                expect(res.status).toBe(204)
+            })
+        })
 
+        test('O registro deve ser removido do banco', () => {
+            return app.db('transfers').where({id: 10000})
+            .then((result) => {
+                expect(result).toHaveLength(0)
+            })
+        })
+        
+        test('As transações associadas devem ter sido removidas', () => {
+            return app.db('transactions').where({transfer_id: 10000})
+            .then((result) => {
+                expect(result).toHaveLength(0)
+            })
+        })
+
+    })
+
+    test('Não deve retornar transferência de outro usuario', () => {
+        return request(app).get(`${MAIN_ROUTE}/10001`)
+        .set('authorization', `bearer ${TOKEN}`)
+        .then((res) => {
+            expect(res.status).toBe(403)
+            expect(res.body.error).toBe('Este recurso não pertence ao usuário')
+        })
+    });
 

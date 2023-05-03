@@ -1,6 +1,5 @@
 
 exports.seed = (knex) => {
-  // Deletes ALL existing entries
   return knex('transactions').del()
     .then(() => knex('transfers').del())
     .then(() => knex('accounts').del())

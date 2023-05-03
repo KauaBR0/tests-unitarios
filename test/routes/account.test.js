@@ -21,6 +21,7 @@ beforeEach(async () => {
 
 test('Deve listar apenas as contas do usuario', async () => {
     await app.db('transactions').del()
+    await app.db('transfers').del()
     await app.db('accounts').del()
     return app.db('accounts')
         .insert([
