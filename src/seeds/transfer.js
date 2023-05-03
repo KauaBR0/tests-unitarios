@@ -7,7 +7,7 @@ exports.seed = (knex) => {
     .then(() => knex('users').del())
     .then(() => knex('users').insert([
       {id: 10000, name: 'User #1', mail: 'user1@mail.com', passwd: '$2a$10$sXbmk5B15GW4GY5ohU2jcuX/GSw8FmxZbBOXLTVmL448wsosdqzdi'},
-      {id: 20000, name: 'User #2', mail: 'user2@mail.com', passwd: '$2a$10$sXbmk5B15GW4GY5ohU2jcuX/GSw8FmxZbBOXLTVmL448wsosdqzdi'}
+      {id: 10001, name: 'User #2', mail: 'user2@mail.com', passwd: '$2a$10$sXbmk5B15GW4GY5ohU2jcuX/GSw8FmxZbBOXLTVmL448wsosdqzdi'},
     ])).then(() => knex('accounts').insert([
       {id: 10000, name: 'AccO #1', user_id: 10000},
       {id: 10001, name: 'AccD #1', user_id: 10000},

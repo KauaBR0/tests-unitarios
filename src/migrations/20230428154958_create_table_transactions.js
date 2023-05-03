@@ -1,7 +1,7 @@
 const knex = require("knex");
 
 exports.up = (knex) => {
-    knex.schema.createTable('transactions', (t) => {
+    return knex.schema.createTable('transactions', (t) => {
         t.increments('id').primary()
         t.string('description').notNull()
         t.enu('type', ['I', 'O']).notNull()

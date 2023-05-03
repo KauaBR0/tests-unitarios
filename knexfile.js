@@ -5,7 +5,7 @@ module.exports = {
         connection: {
             host: 'localhost',
             user: 'postgres',
-            password: 'passwd',
+            password: '1234',
             database: 'barriga',
         },
         migrations: { directory: 'src/migrations'},
